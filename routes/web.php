@@ -11,8 +11,10 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\FriendshipController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\AppController;
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
+Route::get('/search', [AppController::class, 'search'])->name('search');
 
 Route::get('/profile/{user}', [ProfileController::class, 'show'])->where('user', '[0-9]+')->name('profile');
 Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
@@ -40,13 +42,16 @@ Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->nam
 Route::post('/posts/{post}/like', [LikeController::class, 'store'])->name('likes.store');
 Route::delete('/posts/{post}/like', [LikeController::class, 'destroy'])->name('likes.destroy');
 
-Route::post('/messages', [MessageController::class, 'store'])->name('messages.store');
-Route::get('/messages/{userId}', [MessageController::class, 'show'])->name('messages.show');
-Route::post('/messages/{messageId}/read', [MessageController::class, 'markAsRead'])->name('messages.markAsRead');
+// Route::post('/messages', [MessageController::class, 'store'])->name('messages.store');
+// Route::post('/messages/{messageId}/read', [MessageController::class, 'markAsRead'])->name('messages.markAsRead');
+Route::post('/messenger/send_message', [MessageController::class, 'sendMessage'])->name('messages.sendMessage');
+Route::get('/messenger/to/{receiver_id}', [MessageController::class, 'getMessages'])->name('messages.getMessages');
+Route::get('/messenger/chat_users', [MessageController::class, 'getChatUsers'])->middleware('auth');
 
 
 Route::post('/notifications/{userId}', [NotificationController::class, 'store'])->name('notifications.store');
 Route::get('/notifications', [NotificationController::class, 'show'])->name('notifications.show');
+Route::get('/notifications/form', [NotificationController::class, 'showForm'])->name('notifications.showform');
 Route::post('/notifications/{notificationId}/read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
 
 Route::middleware('auth')->group(function () {

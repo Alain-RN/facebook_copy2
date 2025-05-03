@@ -11,11 +11,11 @@
       <img src="{{ $authUser->profile_photo ? asset('storage/' . $authUser->profile_photo) : asset('images/user.png') }}" class="w-8 h-8 rounded-full" alt="Profil">
       <span class="font-semibold">{{$authUser->name}}</span>
     </div>
-    <div class="flex items-center space-x-3 hover:bg-gray-200 rounded-lg p-3 cursor-pointer">
+    <div class="flex items-center space-x-3 hover:bg-gray-200 rounded-lg p-3 cursor-pointer" onclick="window.location.href='{{ route('friends.index') }}'">
       <img src="{{asset('images/friends.png')}}" class="w-9 h-9" alt="Amis">
       <span>Amis</span>
     </div>
-    <div class="flex items-center space-x-3 hover:bg-gray-200 rounded-lg p-3 cursor-pointer">
+    <div class="flex items-center space-x-3 hover:bg-gray-200 rounded-lg p-3 cursor-pointer" onclick="window.location.href='{{ route('groups.index') }}'">
       <img src="{{asset('images/groupes.png')}}" class="w-9 h-9" alt="Groupes">
       <span>Groupes</span>
     </div>
@@ -76,7 +76,7 @@
 
   <!-- Sidebar droite (contacts) -->
   <aside class="hidden lg:flex flex-col w-72 p-4 space-y-3 text-sm text-gray-800 sticky top-0 h-screen overflow-y-auto bg-white">
-    
+      
   </aside>
 
 </div>

@@ -54,18 +54,44 @@
         @if ($friendshipStatus === 'none')
         <form action="{{ route('friends.request', $user->id) }}" method="POST">
           @csrf
-          <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Ajouter ami</button>
+          <button type="submit"
+            class="flex items-center bg-blue-500 text-white font-semibold py-2 px-4 rounded-full hover:bg-blue-600 transition">
+            <img src="{{ asset('images/add.png') }}" alt="Ajouter" class="w-5 h-5 mr-2">
+            Ajouter ami
+          </button>
         </form>
         @elseif ($friendshipStatus === 'pending')
         <form action="{{ route('friends.cancel', $user->id) }}" method="GET">
           @csrf
-          <button type="submit" class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">Annuler la demande</button>
+          <button type="submit" 
+          class="flex items-center bg-blue-500 text-white font-semibold py-2 px-4 rounded-full shadow hover:bg-blue-600 transition duration-200">
+          <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M6 6L14 14M14 6L6 14" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+            Annuler la demande
+          </button>
         </form>
         @elseif ($friendshipStatus === 'accepted')
-          <button class="bg-green-500 text-white px-4 py-2 rounded" disabled>Amis</button>
+        <form action="{{ route('friends.cancel', $user->id) }}" method="GET">
+          @csrf
+          <button class="flex items-center bg-gray-200 text-black font-semibold py-2 px-4 rounded-full shadow hover:bg-gray-300 transition duration-200" type="submit">
+            <img src="/images/alreadyFriend.png" alt="Ami(e)" class="w-4 h-4 mr-2">
+            Amis
+          </button>
+        </form>
         @endif
         @else
           <a href="{{ route('profile.edit') }}" class="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300">Modifier le profil</a>
+        @endif
+        @if ($authUser->id !== $user->id)
+          <button id="chatProfile" 
+          value="{{ $user->id }}"
+          data-name="{{ $user->name }}" 
+          data-photo="{{ $user->profile_photo ? asset('storage/' . $user->profile_photo) : '' }}"
+          class="flex items-center bg-gray-200 text-black font-semibold py-2 px-4 rounded-full shadow hover:bg-gray-300 transition duration-200">
+          <img src="/images/messenger.png" alt="Chat" class="w-5 h-5 mr-2">
+          Message
+          </button>
         @endif
       </div>
       </div>

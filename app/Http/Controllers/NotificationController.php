@@ -29,11 +29,11 @@ class NotificationController extends Controller
 
 
         // User only After sending a message for any feature that need notification
-        Notification::create([
-            'user_id' => $message->receiver_id,
-            'type' => 'New Message',
-            'data' => "You have received a new message from " . Auth::user()->name,
-        ]);
+        // Notification::create([
+        //     'user_id' => $message->receiver_id,
+        //     'type' => 'New Message',
+        //     'data' => "You have received a new message from " . Auth::user()->name,
+        // ]);
 
         return redirect()->back()->with('success', 'Notification created successfully!');
     }
@@ -44,10 +44,19 @@ class NotificationController extends Controller
     public function show()
     {
         $notifications = Notification::where('user_id', Auth::id())
-                                     ->orderBy('created_at', 'desc')
-                                     ->get();
+                ->orderBy('created_at', 'desc')
+                ->get();
 
         return view('notifications.index', compact('notifications'));
+    }
+
+    public function showForm()
+    {
+        $notifications = Notification::where('user_id', Auth::id())
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+        return view('notifications.create', compact('notifications'));
     }
 
     /**

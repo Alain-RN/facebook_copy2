@@ -1,5 +1,5 @@
 <h3>Create Notification</h3>
-<form action="{{ route('notifications.store', $user->id) }}" method="POST">
+<form action="{{ route('notifications.store', $authUser->id) }}" method="POST">
     @csrf
     <div>
         <label for="type">Type:</label>

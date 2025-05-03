@@ -17,6 +17,8 @@ return new class extends Migration
             $table->foreignId('receiver_id')->constrained('users')->onDelete('cascade');
             $table->text('content');
             $table->timestamps();
+
+            $table->index(['sender_id', 'receiver_id']);
         });
     }
 

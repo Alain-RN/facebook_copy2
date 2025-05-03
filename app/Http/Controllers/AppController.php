@@ -9,22 +9,12 @@ class AppController extends Controller
 {
     public function search(Request $request)
     {
-        $query = $request->input('query'); // Récupère le terme de recherche
-        $authUserId = Auth::id(); // ID de l'utilisateur connecté
+        // Récupérer la valeur de la recherche
+        $query = $request->input('query');
 
-        // Récupère les IDs des amis existants
-        $friendIds = Auth::user()->friends()->pluck('id')->toArray();
+        // Effectuer une recherche dans la base de données
+        $friends = User::where('name', 'like', '%' . $query . '%')->get();
 
-        // Recherche des utilisateurs qui ne sont pas amis
-        $users = User::where('id', '!=', $authUserId) // Exclut l'utilisateur connecté
-                     ->whereNotIn('id', $friendIds) // Exclut les amis existants
-                     ->where(function ($queryBuilder) use ($query) {
-                         $queryBuilder->where('name', 'LIKE', "%{$query}%")
-                                      ->orWhere('email', 'LIKE', "%{$query}%");
-                     })
-                     ->take(10) // Limite à 10 résultats
-                     ->get();
-
-        return response()->json($users); // Retourne les résultats en JSON
+        return response()->json(view('partials.search_results', compact('friends'))->render());
     }
 }

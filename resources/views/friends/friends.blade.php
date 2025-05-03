@@ -55,29 +55,28 @@
 
     <div id="all-friends" class="section hidden">
       <h2 class="text-xl font-bold">Tou(te)s les ami(e)s</h2>
-  
+    
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-4 ml-4">
-      @foreach ($friends as $friend)
-      <div class="bg-white shadow rounded overflow-hidden w-[250px]">
-        <img
-          src="{{ $friend->profile_photo ? asset('storage/' . $friend->profile_photo) : asset('images/user.png') }}"
-          alt="Profile Image"
-          class="w-40 h-40 object-cover rounded-full mx-auto mt-4"
-        />
-        <div class="p-3 text-center">
-          <a
-            class="font-semibold mt-4 block text-lg text-gray-800"
-            href="{{ url('profile', $friend->id) }}"
-          >
-            {{ $friend->name }}
-          </a>
-          <p class="text-sm text-gray-500 mb-2">Ami(e)</p>
-        </div>
+        @foreach ($friends as $friend)
+          <div class="bg-white shadow rounded overflow-hidden w-full sm:w-[250px] md:w-[250px]">
+            <img
+              src="{{ $friend->profile_photo ? asset('storage/' . $friend->profile_photo) : asset('images/user.png') }}"
+              alt="Profile Image"
+              class="w-40 h-40 object-cover rounded-full mx-auto mt-4"
+            />
+            <div class="p-3 text-center">
+              <a
+                class="font-semibold mt-4 block text-lg text-gray-800"
+                href="{{ url('profile', $friend->id) }}"
+              >
+                {{ $friend->name }}
+              </a>
+              <p class="text-sm text-gray-500 mb-2">Ami(e)</p>
+            </div>
+          </div>
+        @endforeach
       </div>
-      @endforeach
-      </div>
-
-    </div>
+    </div>    
     
   </main>
 

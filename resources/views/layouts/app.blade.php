@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <title>{{ config('app.name', 'Laravel') }}</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -47,11 +49,6 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                     <div id="search-results" class="absolute bg-white shadow-lg rounded-lg w-full mt-2">
-                        <ul>
-                            <li>Alain</li>
-                            <li>alain</li>
-                            <li>dshfd</li>
-                        </ul>
                     </div>
                 </div>
             </div>
@@ -62,42 +59,74 @@
                     <svg class="h-7 w-7" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"> <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/> </svg>
                 </a>
                 <a href="{{route("friends.index")}}" class="{{ request()->routeIs('friends.index') ? 'text-blue-600 border-b-4 border-blue-600' : 'text-gray-600' }} px-4 lg:px-8 py-3 hover:bg-gray-100 rounded-lg transition duration-150" onclick="console.log('Clicked: Friends')">
-                     <svg class="h-7 w-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /> </svg>
+                    <svg class="h-7 w-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /> </svg>
                 </a>
                  <a href="{{route('groups.index')}}" class="{{ request()->routeIs('groups.index') ? 'text-blue-600 border-b-4 border-blue-600' : 'text-gray-600' }} px-4 lg:px-8 py-3 hover:bg-gray-100 rounded-lg transition duration-150" onclick="console.log('Clicked: Groups')">
-                     <svg class="h-7 w-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                    <svg class="h-7 w-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
                 </a>
             </nav>
     
             <!-- Right section (Profile, Menu) -->
-            <div class="flex items-center space-x-2" >
-                <a href="{{route('profile')}}" class="hidden lg:flex items-center space-x-2 bg-gray-200 hover:bg-gray-300 rounded-full p-1 pr-3 transition duration-150">
+            <div class="flex items-center space-x-1" >
+                <a href="{{route('profile')}}" class="space-x-2 lg:flex items-center  bg-gray-200 hover:bg-gray-300 rounded-full p-1 transition duration-150 mr-2">
                     <img src="{{ $authUser->profile_photo ? asset('storage/' . $authUser->profile_photo) : asset('images/user.png') }}" alt="Profile" class="rounded-full h-7 w-7">
-                    <span class="font-semibold text-sm">Utilisateur</span>
+                    <span class="font-semibold text-sm hidden lg:flex pr-4">Utilisateur</span>
                 </a>
-                <a href="" title="blackberry messenger icons" class="px-1">
-                    <img src="{{asset('images/messenger.png')}}" alt="Messenger" class="h-8 w-8">
-                </a>
-                <button class="bg-gray-200 rounded-full p-2 hover:bg-gray-300 transition duration-150">
-                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
+
+                <!-- Messenger Dropdown Trigger (dans un div parent avec relative pour positionnement absolu du menu) -->
+                <button id="messengerButton" onclick="toggleMessenger()" class="ml-[18px] focus:outline-none">
+                    <img src="{{ asset('images/messenger.png') }}" alt="Messenger" class="h-8 w-8">
                 </button>
-                <div class="relative">
-                    <button onclick="toggleDropdown()" class="bg-gray-200 rounded-full p-2 hover:bg-gray-300 transition duration-150">
-                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 15.5a1 1 0 01-.71-.29l-4-4a1 1 0 111.42-1.42L12 13.09l3.29-3.3a1 1 0 111.42 1.42l-4 4a1 1 0 01-.71.29z" />
-                        </svg>
-                    </button>
-                    <div id="dropdownMenu" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg hidden">
-                        <a href="{{ route('logout') }}" 
-                           onclick="event.preventDefault(); document.getElementById('logout-form').submit();" 
-                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                            Logout
-                        </a>
-                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
-                            @csrf
-                        </form>
+                    <div class="relative">
+                        <div id="messengerDropdown" class="hidden fixed top-20 right-2 w-[350px] bg-white border rounded-lg shadow-lg z-50">
+                            <div class="p-4 border-b">
+                                <h3 class="text-lg font-semibold">Discussions</h3>
+                            </div>
+                            <div class="max-h-80 overflow-y-auto" id="messengerList">
+
+                            </div>
+                        </div>
                     </div>
-                </div>
+
+                <button id="notificationButton" onclick="toggleNotification()" class="relative px-0 rounded-full transition duration-150 focus:outline-none">
+                    <img src="{{asset('images/bell.png')}}" alt="Notification" class="h-9 w-9">
+                </button>
+                    <div class="relative">
+                        <div id="notificationDropdown" class="hidden fixed top-20 right-2 w-[350px] bg-white border rounded-lg shadow-lg z-50">
+                            <div class="p-4 border-b">
+                                <h3 class="text-lg font-semibold">Notifications</h3>
+                            </div>
+                            <div class="max-h-80 overflow-y-auto">
+                                <!-- Notification exemple -->
+                                <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-100 transition">
+                                    <img src="{{ asset('images/user.png') }}" class="h-10 w-10 rounded-full object-cover" alt="User">
+                                    <div>
+                                        <p class="text-sm font-medium">Marie a aimé votre publication</p>
+                                        <p class="text-xs text-gray-500">il y a 2 minutes</p>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+
+                <button onclick="toggleDropdown()" class="bg-gray-200 rounded-full p-2 hover:bg-gray-300 transition duration-150">
+                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 15.5a1 1 0 01-.71-.29l-4-4a1 1 0 111.42-1.42L12 13.09l3.29-3.3a1 1 0 111.42 1.42l-4 4a1 1 0 01-.71.29z" />
+                    </svg>
+                </button>
+                    <div class="relative">
+                        <div id="dropdownMenu" class="absolute top-12 right-0 w-48 bg-white rounded-md shadow-lg hidden border ">
+                            <a href="{{ route('logout') }}" 
+                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();" 
+                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                Logout
+                            </a>
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
+                                @csrf
+                            </form>
+                        </div>
+                    </div>
             </div>
         </header>
 
@@ -200,7 +229,124 @@
         </div>
     </div>
 
-    <script src="{{ asset('js/app.js') }}"></script>
+    <div id="chatPopup" class="hidden fixed bottom-4 right-4 w-[340px] bg-white border rounded-lg shadow-lg flex flex-col">
+        <div class="bg-blue-600 text-white px-4 py-4 rounded-t-lg flex justify-between items-center">
+            <a class="flex items-center" href="" id="linkToUser">          
+                    <img id="chatUserPhoto" alt="h-profile" class="h-8 w-8 rounded-full mr-2">
+                    <p id="chatUserName"></p>
+            </a>
+            <button onclick="closeChat()" class="text-white font-bold">✕</button>
+        </div>
+        <div id="messagesContainer" class="p-4 h-[330px] overflow-y-auto space-y-3">
+            <!-- Messages ici -->
+        </div>
     
+        <div class="border-t px-2 py-2 bg-white">
+            <div class="flex items-center space-x-2">
+                <input type="text" id="messageInput"
+                    class="flex-1 rounded-full border border-gray-300 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
+                    placeholder="Aa">
+        
+                <!-- Bouton envoyer -->
+                <button id="sendMessageButton" class="text-white px-1 py-3 rounded-full text-sm transition" >
+                    <img src="{{asset('images/send.png')}}" alt="Envoyer" class="h-6 w-6">
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Var globale pour stocker l'ID de l'utilisateur et photo de profil
+        window.authUserId = {{ auth()->id() }};
+        window.authUserProfilePhoto = "{{ asset('storage/' . auth()->user()->profile_photo) }}";
+
+        function toggleMessenger() {
+            const dropdown = document.getElementById("messengerDropdown");
+            dropdown.classList.toggle("hidden");
+            if (!dropdown.classList.contains("hidden")) {
+                loadChatUsers();  // Charger les utilisateurs de chat
+            }
+        }
+        
+        // Fermer le menu si on clique en dehors
+        document.addEventListener("click", function (event) {
+            const button = document.getElementById("messengerButton");
+            const dropdown = document.getElementById("messengerDropdown");
+        
+            if (!button.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.classList.add("hidden");
+
+            }
+        });
+
+        function toggleNotification() {
+            const dropdown = document.getElementById("notificationDropdown");
+            dropdown.classList.toggle("hidden");
+        }
+
+        document.addEventListener("click", function (event) {
+            const button = document.getElementById("notificationButton");
+            const dropdown = document.getElementById("notificationDropdown");
+        
+            if (!button.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.classList.add("hidden");
+            }
+        });
+
+        function loadChatUsers() {
+            $.ajax({
+                url: '/messenger/chat_users',
+                method: 'GET',
+                success: function(data) {
+                    let chatUsersHtml = '';
+
+                    data.forEach(user => {
+                        chatUsersHtml += 
+                            `<button class="bb w-full flex items-center gap-3 px-4 py-3 hover:bg-blue-50 transition duration-150 rounded-lg" value="${user.id}">
+                                <img src="/storage/${user.profile_photo}" class="h-11 w-11 rounded-full object-cover" alt="${user.name}">
+                                <div class="text-left flex-1 overflow-hidden">
+                                <p class="font-semibold text-gray-900 truncate">${user.name}</p>
+                                <p class="text-sm text-gray-500 truncate">${user.last_message.content}</p>
+                                </div>
+                            </button>`;
+
+                    });
+
+                    // Injecter les utilisateurs dans le dropdown
+                    $('#messengerList').html(chatUsersHtml);
+                },
+
+                error: function(xhr, status, error) {
+                    console.log('Erreur lors du chargement des utilisateurs:', error);
+                }
+            });
+        }
+
+        // Recherche en temps réel
+        $(document).ready(function() {
+            $('#search').on('input', function() {
+                let query = $(this).val();
+
+                if (query.length > 0) {
+                    $.ajax({
+                        url: '{{ route('search') }}',
+                        type: 'GET',
+                        data: { query: query },
+                        success: function(response) {
+                            $('#search-results').html(response);
+                        },
+                        error: function(xhr, status, error) {
+                            console.log('Erreur:', error);
+                        }
+                    });
+                } else {
+                    $('#search-results').empty();
+                }
+            });
+        });
+    </script>
+    <script src="{{ asset('js/app.js') }}"></script>
+    <script src="{{ asset('js/chat.js') }}"></script>
 </body>
 </html>
