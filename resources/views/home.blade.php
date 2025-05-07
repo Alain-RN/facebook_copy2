@@ -70,14 +70,56 @@
         @if (!empty($post->image))
           <img src="{{ asset('storage/' . $post->image)}}" alt="Image du post" class="rounded w-full h-64 object-cover object-center">
         @endif
+        
+        <div class="mt-4 pt-2 text-sm text-gray-600">
+          <!-- Ligne emojis + compteurs -->
+          <div class="flex justify-between items-center mb-1">
+            <div class="flex items-center space-x-1">
+              <span class="like-count text-sm" data-postid="{{ $post->id }}">
+                {{ $post->likes->count() > 0 ? $post->likes->count() . ' Like(s)' : '' }}
+              </span>
+            </div>
+          </div>
+        
+          <!-- Ligne boutons -->
+          <div class="flex justify-around border-t pt-4 text-gray-600 text-sm font-semibold">
+            <button
+            data-postid="{{ $post->id }}"
+            data-liked="{{ $post->liked ? 'true' : 'false' }}"
+            class="likeBtn flex items-center space-x-1 {{ $post->liked ? 'text-blue-500' : '' }}">
+            <img
+              src="{{ $post->liked ? '/images/likeblue.png' : '/images/like.png' }}"
+              alt="like"
+              class="like w-5 h-5 object-contain mt-[-7.5px]" />
+            <span class="like-text">J’aime</span>
+          </button>
+
+          <button
+            data-postId="{{ $post->id }}"
+            data-userId="{{ $post->user->id }}"
+            data-userName="{{ $post->user->name }}"
+            data-userPhoto="{{ $post->user->profile_photo ? asset('storage/' . $post->user->profile_photo ) : asset('images/user.png') }}"
+            data-postContent="{{ $post->content }}"
+            data-postImage="{{ $post->image ? asset('storage/' . $post->image) : '' }}"
+            data-timePost="{{ $post->created_at }}"
+            data-liked="{{ $post->liked ? 'true' : 'false' }}"
+            data-postlike="{{ $post->likes->count() }}"
+            class="openPublicationPopupBtn flex items-center space-x-1 hover:text-blue-500 transition">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M8 10h.01M12 10h.01M16 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>Commenter</span>
+          </button>
+          
+          </div>
+        </div>
       </div>
     @endforeach
   </main>
-
+  
   <!-- Sidebar droite (contacts) -->
   <aside class="hidden lg:flex flex-col w-72 p-4 space-y-3 text-sm text-gray-800 sticky top-0 h-screen overflow-y-auto bg-white">
-      
   </aside>
-
+  <x-publication-popup :post="$post" :authUser="$authUser" />
 </div>
 @endsection

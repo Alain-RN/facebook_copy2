@@ -32,6 +32,7 @@
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
+
     <div class="min-h-screen flex flex-col">
         <header class="bg-white shadow-md sticky top-0 z-50 flex items-center justify-between px-4 py-2">
             <!-- Left section -->
@@ -44,11 +45,11 @@
                     </a>
                 </div>
                 <div class="relative">
-                    <input type="text" id="search" placeholder="Rechercher sur Facebook" class="hidden md:block bg-gray-100 rounded-full pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white">
+                    <input type="text" id="searchNav" placeholder="Rechercher sur Facebook" class="hidden md:block bg-gray-100 rounded-full pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white">
                     <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 hidden md:block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
-                    <div id="search-results" class="absolute bg-white shadow-lg rounded-lg w-full mt-2">
+                    <div id="search-results" class="absolute bg-white shadow-lg rounded-lg w-full max-h-80 overflow-y-auto mt-1 z-50">
                     </div>
                 </div>
             </div>
@@ -254,7 +255,10 @@
             </div>
         </div>
     </div>
-    
+
+
+    <!-- Ajoute ce script dans ton HTML -->
+    <script src="https://unpkg.com/timeago.js@4.0.2/dist/timeago.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         // Var globale pour stocker l'ID de l'utilisateur et photo de profil
@@ -325,12 +329,12 @@
 
         // Recherche en temps réel
         $(document).ready(function() {
-            $('#search').on('input', function() {
-                let query = $(this).val();
+            $('#searchNav').on('input', function() {
+                let query = $(this).val().toLowerCase();;
 
                 if (query.length > 0) {
                     $.ajax({
-                        url: '{{ route('search') }}',
+                        url: "{{ route('search') }}",
                         type: 'GET',
                         data: { query: query },
                         success: function(response) {
@@ -341,12 +345,115 @@
                         }
                     });
                 } else {
-                    $('#search-results').empty();
+                    $('#search-results').empty(); // Vide les résultats si champ vide
                 }
             });
-        });
+        });      
+        
+
+        document.addEventListener('DOMContentLoaded', function () {
+
+            const popup = document.getElementById('PublicationPopup');
+            const openBtns = document.querySelectorAll('.openPublicationPopupBtn');
+            const closeBtn = document.getElementById('closePublicationPopupBtn');
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            const commentInput = document.getElementById('commentInput');
+            const buttonComment = document.getElementById('submitComment');
+            const commentsContainer = document.getElementById('commentsContainer');
+
+            // Fonction pour afficher un commentaire
+            function renderComment(comment) {
+                const commentHTML = `
+                    <div class="flex items-start space-x-3 p-2">
+                        <img src="${comment.photo}" alt="Avatar" class="w-9 h-9 rounded-full object-cover">
+                        <div class="">
+                            <div class="bg-gray-100 p-2 rounded-xl text-sm leading-snug flex flex-col gap-1">
+                                <span class="font-semibold text-gray-900">${comment.user}</span>
+                                <p>${comment.content}</p>
+                            </div>
+                            <div class="text-xs text-gray-500 mt-1 flex items-center space-x-3">
+                                <span>${comment.created_at}</span>
+                                <button class="font-semibold">J’aime</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Créer un élément div et y injecter le HTML
+                const div = document.createElement('div');
+                div.innerHTML = commentHTML;
+
+                // Ajouter l'élément dans le conteneur des commentaires
+                commentsContainer.prepend(div);
+            }               
+
+            // Fonction pour charger les commentaires
+            function loadComments(postId) {
+                commentsContainer.innerHTML = ''; // Réinitialise les anciens commentaires
+                fetch(`/posts/${postId}/comments`)
+                    .then(res => res.json())
+                    .then(data => {
+                        data.forEach(comment => renderComment(comment));
+                    });
+            }
+
+            openBtns.forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    const postId = btn.getAttribute('data-postId');
+                
+                    // Afficher les infos de la publication
+                    document.getElementById("publicationHeader").innerText = "Publication de " + btn.getAttribute('data-userName');
+                    document.getElementById("postOwner").innerText = btn.getAttribute('data-userName');
+                    document.getElementById("profilePublication").src = btn.getAttribute('data-userPhoto');
+                    document.getElementById("contentPublication").innerText = btn.getAttribute('data-postContent');
+                    document.getElementById("timePost").innerText = timeago.format(btn.getAttribute('data-timePost'));
+                    document.getElementById("imagePost").innerHTML = btn.getAttribute('data-postImage') === ''
+                        ? '<p></p>'
+                        : `<img src="${btn.getAttribute('data-postImage')}" alt="Image de la publication" class="w-full h-64 object-cover object-center">`;
+                
+                    // Charger les commentaires
+                    loadComments(postId);
+                
+                    // Ajouter un commentaire
+                    buttonComment.onclick = () => {
+                        const content = commentInput.value;
+                        if (!content.trim()) return;
+                    
+                        fetch(`/posts/${postId}/comments`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken
+                            },
+                            body: JSON.stringify({ content })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            renderComment(data);
+                            commentInput.value = '';
+                        });
+                    };
+                
+                    popup.classList.remove('hidden');
+                });
+            });
+
+            closeBtn.addEventListener('click', () => {
+                popup.classList.add('hidden');
+            });
+
+            popup.addEventListener('click', (e) => {
+                if (e.target === popup) {
+                    popup.classList.add('hidden');
+                }
+            });
+
+            });
+
     </script>
     <script src="{{ asset('js/app.js') }}"></script>
+    <script src="{{ asset('js/comment.js') }}"></script>
     <script src="{{ asset('js/chat.js') }}"></script>
 </body>
 </html>

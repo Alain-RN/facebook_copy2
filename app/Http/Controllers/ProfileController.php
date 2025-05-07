@@ -26,6 +26,10 @@ class ProfileController extends Controller
 
         $posts = $user->posts()->latest()->get();
 
+        foreach ($posts as $post) {
+            $post->liked = $post->likes->contains('user_id', Auth::id());
+        }
+
         $friendshipStatus = Auth::check() && $user->id !== Auth::id()
         ? \App\Models\Friendship::where(function ($query) use ($user) {
             $query->where('user_id', Auth::id())

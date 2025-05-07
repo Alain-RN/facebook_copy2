@@ -16,9 +16,15 @@ class HomeController extends Controller
     {        
         $posts = Post::with('user')->latest()->get();
         $user = User::find(Auth::id());
+
+        foreach ($posts as $post) {
+            $post->liked = $post->likes->contains('user_id', Auth::id());
+        }
+
         foreach ($posts as $post) {
             $post->user = $post->user;
         }
+        
         return view('home', compact('posts', 'user'));
     }
 }

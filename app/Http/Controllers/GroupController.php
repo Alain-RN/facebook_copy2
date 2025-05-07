@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Group;
 use App\Models\User;
+use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -16,6 +17,7 @@ class GroupController extends Controller
     {
         // $groups = Group::all();
         // return view('groups.index', compact('groups'));
+        
         return view('groups.groupes');
     }
 

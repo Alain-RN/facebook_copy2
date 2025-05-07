@@ -37,22 +37,28 @@ class FriendshipController extends Controller
         if (!$user) {
             abort(404, 'Utilisateur non trouvé.');
         }
-
+    
         if ($user->id === Auth::id()) {
             abort(403, 'Action non autorisée.');
         }
-
-        $friendship = Friendship::where('user_id', Auth::id())
-            ->where('friend_id', $user->id)
+    
+        $friendship = Friendship::where(function ($query) use ($userId) {
+                $query->where('user_id', Auth::id())
+                      ->where('friend_id', $userId);
+            })
+            ->orWhere(function ($query) use ($userId) {
+                $query->where('user_id', $userId)
+                      ->where('friend_id', Auth::id());
+            })
             ->first();
-
-        if (!$friendship || $friendship->user_id !== Auth::id()) {
-            abort(403, 'Action non autorisée.');
+    
+        if (!$friendship) {
+            abort(403, 'Aucune relation trouvée.');
         }
-
+    
         $friendship->delete();
-
-        return redirect()->back()->with('success', 'Demande d\'ami annulée.');
+    
+        return redirect()->back()->with('success', 'Relation annulée.');
     }
 
     /**

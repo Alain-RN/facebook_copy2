@@ -18,7 +18,6 @@
         <form action="{{ route('profile.photo.update') }}" method="POST" enctype="multipart/form-data" class="relative">
           @csrf
           @method('PUT')
-        
           <label for="profile-photo-upload" class="flex items-center justify-center">
             <img src="{{ asset('images/camera.png') }}" alt="Upload Icon" class="w-6 h-6">
           </label>
@@ -35,7 +34,7 @@
         @method('PUT')
 
         <label for="cover-photo-upload" class="bg-gray-800 text-white px-4 py-2 rounded cursor-pointer hover:bg-gray-700">
-        Modifier la couverture
+          Modifier la couverture
         </label>
         <input type="file" id="cover-photo-upload" name="cover_photo" class="hidden" onchange="this.form.submit()">
       </form>
@@ -47,7 +46,7 @@
       <div class="flex flex-col md:flex-row md:items-center md:justify-between">
       <div>
         <h1 class="text-2xl font-bold">{{ $user->name }}</h1>
-        <p class="text-gray-600">{{$friends->count()}} ami(s)</p>
+        <a href="#friends" class="text-gray-600" >{{$friends->count()}} ami(s)</a>
       </div>
       <div class="mt-4 md:mt-0 flex space-x-2">
         @if (Auth::check() && $authUser->id !== $user->id)
@@ -73,7 +72,6 @@
         </form>
         @elseif ($friendshipStatus === 'accepted')
         <form action="{{ route('friends.cancel', $user->id) }}" method="GET">
-          @csrf
           <button class="flex items-center bg-gray-200 text-black font-semibold py-2 px-4 rounded-full shadow hover:bg-gray-300 transition duration-200" type="submit">
             <img src="/images/alreadyFriend.png" alt="Ami(e)" class="w-4 h-4 mr-2">
             Amis
@@ -83,14 +81,14 @@
         @else
           <a href="{{ route('profile.edit') }}" class="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300">Modifier le profil</a>
         @endif
-        @if ($authUser->id !== $user->id)
+                @if ($authUser->id !== $user->id)
           <button id="chatProfile" 
-          value="{{ $user->id }}"
-          data-name="{{ $user->name }}" 
-          data-photo="{{ $user->profile_photo ? asset('storage/' . $user->profile_photo) : '' }}"
-          class="flex items-center bg-gray-200 text-black font-semibold py-2 px-4 rounded-full shadow hover:bg-gray-300 transition duration-200">
-          <img src="/images/messenger.png" alt="Chat" class="w-5 h-5 mr-2">
-          Message
+            value="{{ $user->id }}"
+            data-name="{{ $user->name }}" 
+            data-photo="{{ $user->profile_photo ? asset('storage/' . $user->profile_photo) : '' }}"
+            class="flex items-center bg-gray-200 text-black font-semibold py-2 px-4 rounded-full shadow hover:bg-gray-300 transition duration-200">
+              <img src="/images/messenger.png" alt="Chat" class="w-5 h-5 mr-2">
+              Message
           </button>
         @endif
       </div>
@@ -144,7 +142,7 @@
         @endif
 
         @foreach ($posts as $post)
-          <div class="bg-white rounded shadow p-4 mb-4 relative">
+          <div class="post bg-white rounded shadow p-4 mb-4 relative">
             <div class="flex items-start justify-between mb-2">
               <div class="flex items-center">
                 <img src="{{ $user->profile_photo ? asset('storage/' . $user->profile_photo) : asset('images/user.png') }}" alt="Photo de profil" class="w-10 h-10 rounded-full mr-3">
@@ -169,11 +167,53 @@
             </div>
             <p class="mb-2 text-gray-800">{{ $post->content }}</p>
             @if (!empty($post->image))
-              <img src="{{ asset('storage/' . $post->image) }}" alt="Image du post" class="rounded w-full h-64 object-cover object-center">
+              <img src="{{ asset('storage/' . $post->image) }}" alt="Image du post" class="rounded w-full h-96 object-cover object-center">
             @endif
+
+            <div class="mt-4 pt-2 text-sm text-gray-600">
+              <!-- Ligne emojis + compteurs -->
+              <div class="flex justify-between items-center mb-1">
+                <div class="flex items-center space-x-1">
+                  <span class="like-count text-sm" data-postid="{{ $post->id }}">
+                    {{ $post->likes->count() > 0 ? $post->likes->count() . ' Like(s)' : '' }}
+                  </span>
+                </div>
+              </div>
+            
+              <!-- Ligne boutons -->
+              <div class="flex justify-around border-t pt-4 text-gray-600 text-sm font-semibold">
+                <button
+                data-postid="{{ $post->id }}"
+                data-liked="{{ $post->liked ? 'true' : 'false' }}"
+                class="likeBtn flex items-center space-x-1 {{ $post->liked ? 'text-blue-500' : '' }}">
+                <img
+                  src="{{ $post->liked ? '/images/likeblue.png' : '/images/like.png' }}"
+                  alt="like"
+                  class="like w-5 h-5 object-contain mt-[-7.5px]" />
+                <span class="like-text">J’aime</span>
+              </button>
+
+              <button
+                data-postId="{{ $post->id }}"
+                data-userId="{{ $user->id }}"
+                data-userName="{{ $user->name }}"
+                data-userPhoto="{{ $user->profile_photo ? asset('storage/' . $user->profile_photo) : asset('images/user.png') }}"
+                data-postContent="{{ $post->content }}"
+                data-postImage="{{ $post->image ? asset('storage/' . $post->image) : '' }}"
+                data-timePost="{{ $post->created_at }}"
+                data-liked="{{ $post->liked ? 'true' : 'false' }}"
+                data-postlike="{{ $post->likes->count() }}"
+                class="openPublicationPopupBtn flex items-center space-x-1 hover:text-blue-500 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path d="M8 10h.01M12 10h.01M16 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>Commenter</span>
+              </button>
+
+              </div>
+            </div>
           </div>
         @endforeach
-
         @if ($posts->isEmpty())
           <p class="text-center text-gray-500">Aucune publication pour le moment.</p>
         @endif
@@ -237,7 +277,7 @@
         </div>
         </div>
     </div>
-
+    <x-publication-popup :post="$post" :authUser="$authUser" />
     <script>
       document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
@@ -249,6 +289,7 @@
           document.getElementById(targetId).classList.remove('hidden');
         });
       });
+
     </script>
   
 </div>

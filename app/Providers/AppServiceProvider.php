@@ -11,6 +11,7 @@ class AppServiceProvider extends ServiceProvider
     {
         // Partager l'utilisateur connecté avec toutes les vues
         View::composer('*', function ($view) {
+            // Partager l'utilisateur connecté
             $view->with('authUser', Auth::user());
         });
     }
